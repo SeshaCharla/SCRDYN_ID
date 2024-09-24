@@ -3,7 +3,7 @@ from pandas import read_csv
 from scipy.io import loadmat
 import pathlib as pth
 import pickle as pkl
-import  unit_convs as uc
+import  unit_convs as uc    # Unit Conversions are done on the raw data
 
 # Data names for the truck and test Data ---------------------------------------
 # [0][j] - Degreened Data
@@ -142,23 +142,23 @@ class Data(object):
         file_name = test_dir + "/" + test_dict[self.name]
         data = read_csv(file_name, header=[0, 1])
         # Assigning the Data to the variables
+        # Time is in seconds
         self.raw['t'] = np.array(data.get(('LOG_TM', 'sec')), dtype=np.float64).flatten()
-        self.raw['F'] = uc.uConv(np.array(data.get(('EXHAUST_FLOW', 'kg/min')), dtype=np.float64).flatten(),
-                                "kg/min to g/s")            # g/sec
-        Tin = np.array(data.get(('V_AIM_TRC_DPF_OUT', 'Deg_C')),
-                       dtype=np.float64).flatten()
-        Tout = np.array(data.get(('V_AIM_TRC_SCR_OUT', 'Deg_C')),
-                        dtype=np.float64).flatten()
-        self.raw['T'] = uc.uConv(np.mean([Tin, Tout], axis=0).flatten(),
-                                "T250C")
-        self.raw['x1'] = np.array(data.get(('EXH_CW_NOX_COR_U1', 'PPM')),
-                                  dtype=np.float64).flatten()
-        self.raw['x2'] = np.array(data.get(('EXH_CW_AMMONIA_MEA', 'ppm')),
-                                  dtype=np.float64).flatten()
-        self.raw['y1'] = np.array(data.get(('V_SCM_PPM_SCR_OUT_NOX', 'ppm')),
-                                  dtype=np.float64).flatten()
-        self.raw['u1'] = np.array(data.get(('ENG_CW_NOX_FTIR_COR_U2', 'PPM')),
-                                  dtype=np.float64).flatten()
+        # Mass flow rate is in g/sec
+        self.raw['F'] = uc.uConv(np.array(data.get(('EXHAUST_FLOW', 'kg/min')), dtype=np.float64).flatten(), "kg/min to g/s")            # g/sec
+        # Temperature is in deg-C
+        Tin = np.array(data.get(('V_AIM_TRC_DPF_OUT', 'Deg_C')), dtype=np.float64).flatten()
+        Tout = np.array(data.get(('V_AIM_TRC_SCR_OUT', 'Deg_C')), dtype=np.float64).flatten()
+        self.raw['T'] = uc.uConv(np.mean([Tin, Tout], axis=0).flatten(), "T250C")
+        # NOx output is in mol/m^3
+        self.raw['x1'] = uc.uConv(np.array(data.get(('EXH_CW_NOX_COR_U1', 'PPM')), dtype=np.float64).flatten(), "NOx ppm to mol/m^3")
+        # NH3 output is in mol/m^3
+        self.raw['x2'] = uc.uConv(np.array(data.get(('EXH_CW_AMMONIA_MEA', 'ppm')), dtype=np.float64).flatten(), "NH3 ppm to mol/m^3")
+        # NOx out measured in mol/m^3
+        self.raw['y1'] = uc.uConv(np.array(data.get(('V_SCM_PPM_SCR_OUT_NOX', 'ppm')), dtype=np.float64).flatten(), "NOx ppm to mol/m^3")
+        # NOx input is in mol/m^3
+        self.raw['u1'] = uc.uConv(np.array(data.get(('ENG_CW_NOX_FTIR_COR_U2', 'PPM')), dtype=np.float64).flatten(), "NOx ppm to mol/m^3")
+        # Urea injection rate is in ml/sec
         self.raw['u2'] = np.array(data.get(('V_UIM_FLM_ESTUREAINJRATE', 'ml/sec')), dtype=np.float64).flatten()
         # u1_sensor = np.array(Data.get(('EONOX_COMP_VALUE', 'ppm'))).flatten()
         self.gen_ssd()
@@ -174,8 +174,8 @@ class Data(object):
         self.raw['F'] = np.array(data['pExhMF']).flatten()                                        # g/sec
         self.raw['T'] = uc.uConv(np.array(data['pSCRBedTemp']).flatten(), "T250C")      # 250 deg-C
         self.raw['u2'] = np.array(data['pUreaDosing']).flatten()
-        self.raw['u1'] = np.array(data['pNOxInppm']).flatten()
-        self.raw['y1'] = np.array(data['pNOxOutppm']).flatten()
+        self.raw['u1'] = uc.uConv(np.array(data['pNOxInppm']).flatten(), "NOx ppm to mol/m^3")
+        self.raw['y1'] = uc.uConv(np.array(data['pNOxOutppm']).flatten(), "NOx ppm to mol/m^3")
         self.gen_iod()
         self.ssd = None
         self.pickle_data()
