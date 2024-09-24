@@ -3,6 +3,7 @@ from pandas import read_csv
 from scipy.io import loadmat
 import pathlib as pth
 import pickle as pkl
+import  unit_convs as uc
 
 # Data names for the truck and test Data ---------------------------------------
 # [0][j] - Degreened Data
@@ -29,8 +30,6 @@ test_dict = {"aged_cftp": "g580040_Aged_cFTP.csv",
              "dg_cftp": "g577670_DG_cFTP.csv",
              "dg_hftp": "g577671_DG_hFTP.csv",
              "dg_rmc": "g577673_DG_RMC.csv"}
-kgmin2gsec_gain = 16.6667  # Conversion factor from kg/min to g/sec
-gsec2kgmin_gain = 1 / kgmin2gsec_gain  # Conversion factor from g/sec to kg/min
 
 
 # Manipulating functions ------------------------------------------------------
@@ -90,7 +89,7 @@ class Data(object):
         self.ssd['x2'] = np.array(ssd_mat[2]).flatten()
         self.ssd['u1'] = np.array(ssd_mat[3]).flatten()
         self.ssd['u2'] = np.array(ssd_mat[4]).flatten()
-        self.ssd['T'] = np.array(ssd_mat[5]).flatten() + 273.15     # Kelvin
+        self.ssd['T'] = np.array(ssd_mat[5]).flatten()
         self.ssd['F'] = np.array(ssd_mat[6]).flatten()
         # Find the time discontinuities in SSD Data
         self.ssd['t_skips'] = find_discontinuities(self.ssd['t'], self.dt)
@@ -114,7 +113,7 @@ class Data(object):
         self.iod['y1'] = np.array(iod_mat[1]).flatten()
         self.iod['u1'] = np.array(iod_mat[2]).flatten()
         self.iod['u2'] = np.array(iod_mat[3]).flatten()
-        self.iod['T'] = np.array(iod_mat[4]).flatten() + 273.15     # Kelvin
+        self.iod['T'] = np.array(iod_mat[4]).flatten()
         self.iod['F'] = np.array(iod_mat[5]).flatten()
         # Find the time discontinuities in IOD Data
         self.iod['t_skips'] = find_discontinuities(self.iod['t'], self.dt)
@@ -143,15 +142,15 @@ class Data(object):
         file_name = test_dir + "/" + test_dict[self.name]
         data = read_csv(file_name, header=[0, 1])
         # Assigning the Data to the variables
-        self.raw['t'] = np.array(data.get(('LOG_TM', 'sec')),
-                                 dtype=np.float64).flatten()
-        self.raw['F'] = np.array(data.get(('EXHAUST_FLOW', 'kg/min')),
-                                 dtype=np.float64).flatten()
+        self.raw['t'] = np.array(data.get(('LOG_TM', 'sec')), dtype=np.float64).flatten()
+        self.raw['F'] = uc.uConv(np.array(data.get(('EXHAUST_FLOW', 'kg/min')), dtype=np.float64).flatten(),
+                                "kg/min to g/s")            # g/sec
         Tin = np.array(data.get(('V_AIM_TRC_DPF_OUT', 'Deg_C')),
                        dtype=np.float64).flatten()
         Tout = np.array(data.get(('V_AIM_TRC_SCR_OUT', 'Deg_C')),
                         dtype=np.float64).flatten()
-        self.raw['T'] = np.mean([Tin, Tout], axis=0).flatten()
+        self.raw['T'] = uc.uConv(np.mean([Tin, Tout], axis=0).flatten(),
+                                "T250C")
         self.raw['x1'] = np.array(data.get(('EXH_CW_NOX_COR_U1', 'PPM')),
                                   dtype=np.float64).flatten()
         self.raw['x2'] = np.array(data.get(('EXH_CW_AMMONIA_MEA', 'ppm')),
@@ -172,8 +171,8 @@ class Data(object):
         data = loadmat(file_name)
         # Assigning the Data to the variables
         self.raw['t'] = np.array(data['tod']).flatten()
-        self.raw['F'] = np.array(data['pExhMF']).flatten() * gsec2kgmin_gain
-        self.raw['T'] = np.array(data['pSCRBedTemp']).flatten()
+        self.raw['F'] = np.array(data['pExhMF']).flatten()                                        # g/sec
+        self.raw['T'] = uc.uConv(np.array(data['pSCRBedTemp']).flatten(), "T250C")      # 250 deg-C
         self.raw['u2'] = np.array(data['pUreaDosing']).flatten()
         self.raw['u1'] = np.array(data['pNOxInppm']).flatten()
         self.raw['y1'] = np.array(data['pNOxOutppm']).flatten()
@@ -205,7 +204,6 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
     # Actually load the entire Data set ----------------------------------------
-    normalization = False
     test_data = load_test_data_set()
     truck_data = load_truck_data_set()
 
