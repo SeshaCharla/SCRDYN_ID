@@ -206,6 +206,7 @@ if __name__ == "__main__":
     # Actually load the entire Data set ----------------------------------------
     test_data = load_test_data_set()
     truck_data = load_truck_data_set()
+    fig_dpi = 600
 
     # Plotting all the Data sets
     for i in range(2):
@@ -218,8 +219,8 @@ if __name__ == "__main__":
                 plt.xlabel('Time [s]')
                 plt.ylabel(key)
                 plt.title(test_data[i][j].name)
-                plt.savefig("figs/" + test_data[i][j].name + "_ssd_" + key + ".png")
-                plt.close()
+                plt.savefig("figs/" + test_data[i][j].name + "_ssd_" + key + ".png", dpi=fig_dpi)
+                # plt.close()
             for key in ['u1', 'u2', 'T', 'F', 'y1']:
                 plt.figure()
                 plt.plot(test_data[i][j].iod['t'], test_data[i][j].iod[key], label=test_data[i][j].name + " " + key)
@@ -228,8 +229,8 @@ if __name__ == "__main__":
                 plt.xlabel('Time [s]')
                 plt.ylabel(key)
                 plt.title(test_data[i][j].name)
-                plt.savefig("figs/" + test_data[i][j].name + "_iod_" + key + ".png")
-                plt.close()
+                plt.savefig("figs/" + test_data[i][j].name + "_iod_" + key + ".png", dpi=fig_dpi)
+                # plt.close()
 
     for i in range(2):
         for j in range(4):
@@ -241,8 +242,8 @@ if __name__ == "__main__":
                 plt.xlabel('Time [s]')
                 plt.ylabel(key)
                 plt.title(truck_data[i][j].name)
-                plt.savefig("figs/" + truck_data[i][j].name + "_iod_" + key + ".png")
-                plt.close()
+                plt.savefig("figs/" + truck_data[i][j].name + "_iod_" + key + ".png", dpi=fig_dpi)
+                # plt.close()
 
     # Showing datat discontinuities --------------------------------------------
     plt.figure()
@@ -257,8 +258,8 @@ if __name__ == "__main__":
     plt.xlabel('Index')
     plt.ylabel('Time [s]')
     plt.title('Time discontinuities in test Data')
-    plt.savefig("figs/time_discontinuities_test.png")
-    plt.close()
+    plt.savefig("figs/time_discontinuities_test.png", dpi=fig_dpi)
+    # plt.close()
 
     plt.figure()
     for i in range(2):
@@ -270,5 +271,8 @@ if __name__ == "__main__":
     plt.xlabel('Index')
     plt.ylabel('Time [s]')
     plt.title('Time discontinuities in truck Data')
-    plt.savefig("figs/time_discontinuities_truck.png")
-    plt.close()
+    plt.savefig("figs/time_discontinuities_truck.png", dpi=fig_dpi)
+    # plt.close()
+
+    plt.show()
+    # plt.close('all')
