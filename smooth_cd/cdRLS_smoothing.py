@@ -1,6 +1,4 @@
 import numpy as np
-from statsmodels.sandbox.regression.try_catdata import groupsstats_1d
-
 
 def cdRLS_smooth(y, lmda=0, nu=0, h=0):
     """yt: time series data
@@ -66,7 +64,7 @@ if __name__=="__main__":
     dat = rd.Data("truck", 0, 0)
     print(dat.name)
     fig_dpi = 600
-    lda = 0.99
+    lda = 0.75
 
     # smoothing y1 data
     t = dat.iod['t']
