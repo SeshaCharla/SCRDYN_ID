@@ -1,7 +1,5 @@
 import sys
 
-from sympy.printing.pretty.pretty_symbology import line_width
-
 sys.path.append('../ReadStuff/')
 
 import read_data as rd
