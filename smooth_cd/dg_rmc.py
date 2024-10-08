@@ -13,7 +13,7 @@ mpl.use('TkAgg')
 
 
 
-dat = rd.Data('test', 0, 1)
+dat = rd.Data('test', 0, 2)
 lda = 0.98
 f_samp = 5
 h = dict()

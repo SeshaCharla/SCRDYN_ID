@@ -21,19 +21,21 @@ nu = dict()
 # Values
 #
 nu['x1'] = 0.5
+nu['x2'] = 0.04
 nu['u1'] = 0.5
 nu['u2'] = 0.1
 nu['T'] = 30
 nu['F'] = 20
 #
 h['x1'] = 1
+h['x2'] = 0.04
 h['u1'] = 1
 h['u2'] = 0.2
 h['T'] = 40
 h['F'] = 50
 
 t = dat.ssd['t']
-for y in ['x1', 'u1', 'u2', 'T','F']: #
+for y in ['x1', 'x2', 'u1', 'u2', 'T','F']: #
     (ys, g1, g2) = cdRLS.cdRLS_smooth(dat.ssd[y], lmda=lda, nu=nu[y], h=h[y])
     plt.figure()
     plt.plot(t, dat.ssd[y], label=y)

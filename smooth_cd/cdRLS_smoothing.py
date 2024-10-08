@@ -1,4 +1,6 @@
 import numpy as np
+from sympy.testing.pytest import raises
+
 
 def cdRLS_smooth(y, lmda=0, nu=0, h=0):
     """yt: time series data
@@ -50,6 +52,50 @@ def cdRLS_withTD(t_skips, y, lmda=0, nu=0, h=0):
         g1[t_skips[i]:t_skips[i+1]] = g_1
         g2[t_skips[i]:t_skips[i+1]] = g_2
     return th_hat, g1, g2
+
+
+class cdRLS_parms:
+    def __init__(self, str):
+        if str == "test":
+            self.lmbda = 0.98
+            self.h = dict()
+            self.nu = dict()
+            # Values
+            self.nu['x1'] = 0.5
+            self.nu['x2'] = 0.04
+            self.nu['u1'] = 0.5
+            self.nu['u2'] = 0.1
+            self.nu['T'] = 30
+            self.nu['F'] = 20
+            self.nu['y1'] = 0.5
+            #
+            self.h['x1'] = 1
+            self.h['x2'] = 0.04
+            self.h['u1'] = 1
+            self.h['u2'] = 0.2
+            self.h['T'] = 40
+            self.h['F'] = 50
+            self.h['y1'] = 1
+
+        elif str == "truck":
+            self.lmbda = 0.95
+            self.h = dict()
+            self.nu = dict()
+            # Values
+            self.nu['y1'] = 10
+            self.nu['u1'] = 10
+            self.nu['u2'] = 0.8
+            self.nu['T'] = 30
+            self.nu['F'] = 20
+            #
+            self.h['y1'] = 40
+            self.h['u1'] = 2
+            self.h['u2'] = 0.2
+            self.h['T'] = 40
+            self.h['F'] = 50
+        else:
+            raise(ValueError("Worng string arugement"))
+
 
 # Example
 if __name__=="__main__":
