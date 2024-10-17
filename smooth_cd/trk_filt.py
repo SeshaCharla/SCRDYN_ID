@@ -10,6 +10,7 @@ import cdRLS_smoothing as cdRLS
 
 import matplotlib as mpl
 mpl.use('TkAgg')
+import pathlib as pth
 
 # Read data
 dat = rd.load_truck_data_set()
@@ -35,7 +36,11 @@ for sig in ['y1', 'u1', 'u2', 'T', 'F']:
             plt.ylabel(sig)
             plt.title(dat[i][j].name)
             plt.tight_layout()
-            # plt.savefig("figs/" + dat.name + "/" + dat.name + "_y1.png", dpi=fig_dpi)
+            # Saving the figure
+            direct = pth.Path("figs/trk_filt/" + dat[i][j].name)
+            direct.mkdir(parents=True, exist_ok=True)
+            plt.savefig("figs/trk_filt/" + dat[i][j].name + "/"+ sig +".png", dpi=300)
+            plt.close()
 
             plt.figure()
             f, pd = psd.welch_psd(dat[i][j].iod[sig], fs)
@@ -49,6 +54,7 @@ for sig in ['y1', 'u1', 'u2', 'T', 'F']:
             plt.ylabel('Scaled PSD')
             plt.grid()
             plt.legend()
-            # plt.savefig("figs/test_psd/" + sig + ".png", dpi=1200)
+            plt.savefig("figs/trk_filt/" + dat[i][j].name + "/" + sig + "_psd.png", dpi=300)
+            plt.close()
 
-plt.show()
+plt.close('all')

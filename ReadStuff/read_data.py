@@ -4,6 +4,11 @@ from scipy.io import loadmat
 import pathlib as pth
 import pickle as pkl
 import  unit_convs as uc    # Unit Conversions are done on the raw data
+# Filtering data module
+import  sys
+sys.path.append("../smooth_cd/")
+import cdRLS_smoothing as cdRLS
+
 
 # Data names for the truck and test Data ---------------------------------------
 # [0][j] - Degreened Data
@@ -58,6 +63,7 @@ class Data(object):
         self.ssd = {}
         self.iod = {}
         self.norm = {}
+        self.cdRLS_parms = cdRLS.cdRLS_parms(tt)
 
         # Get the right Data name and root directory
         if tt == "truck":
@@ -93,6 +99,12 @@ class Data(object):
         self.ssd['F'] = np.array(ssd_mat[6]).flatten()
         # Find the time discontinuities in SSD Data
         self.ssd['t_skips'] = find_discontinuities(self.ssd['t'], self.dt)
+        # Smooth all the data
+        for state in ['x1', 'x2', 'u1', 'u2', 'T', 'F']:
+            self.ssd[state], g1, g2 = cdRLS.cdRLS_withTD(self.ssd['t_skips'], self.ssd[state],
+                                                 self.cdRLS_parms.lmbda,
+                                                 self.cdRLS_parms.nu[state],
+                                                 self.cdRLS_parms.h[state])
 
     def gen_iod(self):
         # Generate the input output Data
@@ -117,6 +129,12 @@ class Data(object):
         self.iod['F'] = np.array(iod_mat[5]).flatten()
         # Find the time discontinuities in IOD Data
         self.iod['t_skips'] = find_discontinuities(self.iod['t'], self.dt)
+        # Smooth all the data
+        for state in ['y1', 'u1', 'u2', 'T', 'F']:
+            self.iod[state], g1, g2 = cdRLS.cdRLS_withTD(self.iod['t_skips'], self.iod[state],
+                                                 self.cdRLS_parms.lmbda,
+                                                 self.cdRLS_parms.nu[state],
+                                                 self.cdRLS_parms.h[state])
 
     def pickle_data(self):
         # Create a dictionary of the Data
@@ -206,7 +224,7 @@ if __name__ == "__main__":
     # Actually load the entire Data set ----------------------------------------
     test_data = load_test_data_set()
     truck_data = load_truck_data_set()
-    fig_dpi = 600
+    fig_dpi = 300
 
     # Plotting all the Data sets
     for i in range(2):
@@ -220,7 +238,7 @@ if __name__ == "__main__":
                 plt.ylabel(key)
                 plt.title(test_data[i][j].name)
                 plt.savefig("figs/" + test_data[i][j].name + "_ssd_" + key + ".png", dpi=fig_dpi)
-                # plt.close()
+                plt.close()
             for key in ['u1', 'u2', 'T', 'F', 'y1']:
                 plt.figure()
                 plt.plot(test_data[i][j].iod['t'], test_data[i][j].iod[key], label=test_data[i][j].name + " " + key)
@@ -230,7 +248,7 @@ if __name__ == "__main__":
                 plt.ylabel(key)
                 plt.title(test_data[i][j].name)
                 plt.savefig("figs/" + test_data[i][j].name + "_iod_" + key + ".png", dpi=fig_dpi)
-                # plt.close()
+                plt.close()
 
     for i in range(2):
         for j in range(4):
@@ -243,7 +261,7 @@ if __name__ == "__main__":
                 plt.ylabel(key)
                 plt.title(truck_data[i][j].name)
                 plt.savefig("figs/" + truck_data[i][j].name + "_iod_" + key + ".png", dpi=fig_dpi)
-                # plt.close()
+                plt.close()
 
     # Showing datat discontinuities --------------------------------------------
     plt.figure()
@@ -259,7 +277,7 @@ if __name__ == "__main__":
     plt.ylabel('Time [s]')
     plt.title('Time discontinuities in test Data')
     plt.savefig("figs/time_discontinuities_test.png", dpi=fig_dpi)
-    # plt.close()
+    plt.close()
 
     plt.figure()
     for i in range(2):
@@ -272,7 +290,7 @@ if __name__ == "__main__":
     plt.ylabel('Time [s]')
     plt.title('Time discontinuities in truck Data')
     plt.savefig("figs/time_discontinuities_truck.png", dpi=fig_dpi)
-    # plt.close()
+    plt.close()
 
-    plt.show()
-    # plt.close('all')
+    # plt.show()
+    plt.close('all')

@@ -30,7 +30,7 @@ for sig in ['x1', 'x2', 'u1', 'u2', 'T', 'F']:
     plt.ylabel('Scaled PSD')
     plt.grid()
     plt.legend()
-    plt.savefig("figs/test_psd/"+sig+".png", dpi=1200)
+    plt.savefig("figs/test_psd/"+sig+".png", dpi=300)
 
 plt.figure()
 for i in range(2):
@@ -44,6 +44,6 @@ plt.xlabel('Frequency (Hz)')
 plt.ylabel('Scaled PSD')
 plt.grid()
 plt.legend()
-plt.savefig("figs/test_psd/y1.png", dpi=1200)
+plt.savefig("figs/test_psd/y1.png", dpi=300)
 
 plt.show()

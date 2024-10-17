@@ -1,5 +1,4 @@
 import numpy as np
-from sympy.testing.pytest import raises
 
 
 def cdRLS_smooth(y, lmda=0, nu=0, h=0):
@@ -82,17 +81,17 @@ class cdRLS_parms:
             self.h = dict()
             self.nu = dict()
             # Values
-            self.nu['y1'] = 10
-            self.nu['u1'] = 10
-            self.nu['u2'] = 0.8
+            self.nu['y1'] = 2.5
+            self.nu['u1'] = 20
+            self.nu['u2'] = 1
             self.nu['T'] = 30
-            self.nu['F'] = 20
+            self.nu['F'] = 200
             #
-            self.h['y1'] = 40
-            self.h['u1'] = 2
-            self.h['u2'] = 0.2
+            self.h['y1'] = 5
+            self.h['u1'] = 40
+            self.h['u2'] = 2
             self.h['T'] = 40
-            self.h['F'] = 50
+            self.h['F'] = 400
         else:
             raise(ValueError("Worng string arugement"))
 

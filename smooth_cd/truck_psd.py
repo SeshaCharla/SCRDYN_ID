@@ -32,6 +32,6 @@ for sig in ['y1', 'u1', 'u2', 'T', 'F']:
     plt.ylabel('Scaled PSD')
     plt.grid()
     plt.legend()
-    plt.savefig("figs/truck_psd/"+sig+".png", dpi=1200)
+    plt.savefig("figs/truck_psd/"+sig+".png", dpi=300)
 
 plt.show()
