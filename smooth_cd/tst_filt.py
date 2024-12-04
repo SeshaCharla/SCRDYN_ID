@@ -39,8 +39,11 @@ for sig in ['x1', 'x2', 'u1', 'u2', 'T', 'F']:
             # Saving the figure
             direct = pth.Path("figs/tst_filt/" + dat[i][j].name)
             direct.mkdir(parents=True, exist_ok=True)
-            plt.savefig("figs/tst_filt/" + dat[i][j].name + "/"+ sig +".png", dpi=300)
+            plt.savefig("figs/tst_filt/" + dat[i][j].name + "/"+ sig +".png", dpi=150)
             plt.close()
+            print(dat[i][j].name + " - [max, min] "+sig+" = [{}, {}]".format(np.round(np.max(sig_f), 2),
+                                                                             np.round(np.min(sig_f), 2))
+                  )
 
             plt.figure()
             f, pd = psd.welch_psd(dat[i][j].ssd[sig], fs)
@@ -54,7 +57,7 @@ for sig in ['x1', 'x2', 'u1', 'u2', 'T', 'F']:
             plt.ylabel('Scaled PSD')
             plt.grid()
             plt.legend()
-            plt.savefig("figs/tst_filt/" + dat[i][j].name + "/" + sig + "_psd.png", dpi=300)
+            plt.savefig("figs/tst_filt/" + dat[i][j].name + "/" + sig + "_psd.png", dpi=150)
             plt.close()
 
 
@@ -73,8 +76,11 @@ for sig in ['y1']:
             plt.ylabel(sig)
             plt.title(dat[i][j].name)
             plt.tight_layout()
-            plt.savefig("figs/tst_filt/" + dat[i][j].name + "/" + sig + ".png", dpi=300)
+            plt.savefig("figs/tst_filt/" + dat[i][j].name + "/" + sig + ".png", dpi=150)
             plt.close()
+            print(dat[i][j].name + " - [max, min] "+sig+" = [{}, {}]".format(np.round(np.max(sig_f), 2),
+                                                                             np.round(np.min(sig_f), 2))
+                  )
 
             plt.figure()
             f, pd = psd.welch_psd(dat[i][j].iod[sig], fs)
@@ -88,7 +94,7 @@ for sig in ['y1']:
             plt.ylabel('Scaled PSD')
             plt.grid()
             plt.legend()
-            plt.savefig("figs/tst_filt/" + dat[i][j].name + "/" + sig + "_psd.png", dpi=300)
+            plt.savefig("figs/tst_filt/" + dat[i][j].name + "/" + sig + "_psd.png", dpi=150)
             plt.close()
 
 plt.close('all')

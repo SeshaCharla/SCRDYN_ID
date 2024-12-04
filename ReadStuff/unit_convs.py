@@ -16,7 +16,7 @@ import numpy as np
 
 # Constants
 kgmin2gsec = 16.6667              # Conversion factor from kg/min to g/sec
-T0 = 250                               # Reference temperature in deg-C
+T0 = 200                               # Reference temperature in deg-C
 M_nox = 30.0061                        # Molecular weight of NOx in g/mol
 M_nh3 = 17.0305                        # Molecular weight of NH3 in g/mol
 
@@ -24,7 +24,7 @@ def uConv(x, conv_type):
     """Unit conversion for the states"""
     match conv_type:
         case "T250C":
-            return np.array([xi - 250 for xi in x])
+            return np.array([xi - T0 for xi in x])
         case "kg/min to g/s":
             return np.array([xi * kgmin2gsec for xi in x])
         case "NOx ppm to mol/m^3":

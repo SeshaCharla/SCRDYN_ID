@@ -163,7 +163,7 @@ class Data(object):
         # Time is in seconds
         self.raw['t'] = np.array(data.get(('LOG_TM', 'sec')), dtype=np.float64).flatten()
         # Mass flow rate is in g/sec
-        self.raw['F'] = uc.uConv(np.array(data.get(('EXHAUST_FLOW', 'kg/min')), dtype=np.float64).flatten(), "kg/min to g/s")            # g/sec
+        self.raw['F'] = uc.uConv(np.array(data.get(('EXHAUST_FLOW', 'kg/min')), dtype=np.float64).flatten(), "kg/min to g/s")        # g/sec
         # Temperature is in deg-C
         Tin = np.array(data.get(('V_AIM_TRC_DPF_OUT', 'Deg_C')), dtype=np.float64).flatten()
         Tout = np.array(data.get(('V_AIM_TRC_SCR_OUT', 'Deg_C')), dtype=np.float64).flatten()
@@ -189,7 +189,7 @@ class Data(object):
         data = loadmat(file_name)
         # Assigning the Data to the variables
         self.raw['t'] = np.array(data['tod']).flatten()
-        self.raw['F'] = np.array(data['pExhMF']).flatten()                                        # g/sec
+        self.raw['F'] = np.array(data['pExhMF']).flatten()                                       # g/sec
         self.raw['T'] = uc.uConv(np.array(data['pSCRBedTemp']).flatten(), "T250C")      # 250 deg-C
         self.raw['u2'] = np.array(data['pUreaDosing']).flatten()
         self.raw['u1'] = uc.uConv(np.array(data['pNOxInppm']).flatten(), "NOx ppm to mol/m^3")
