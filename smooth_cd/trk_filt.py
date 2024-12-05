@@ -20,7 +20,7 @@ fs = 1/td
 # Parameters
 prms = cdRLS.cdRLS_parms("truck")
 
-for sig in ['y1', 'u1', 'u2', 'T', 'F']:
+for sig in ['y1', 'u1', 'u2', 'T', 'F', 'eta']:
     plt.figure()
     for i in range(2):
         for j in range(4):

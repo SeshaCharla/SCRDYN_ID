@@ -17,12 +17,18 @@ def cnstrct_Phi_NOx(x1k, u1k, u2k, Tk, Fk, u1m, u2m, Tm, Fm):
     phi_tau_m = (1/Fm) * phi_m
     phi_ur_m = u2m * phi_tau_m
     phi_1_k = -u1k * phi_tau_k
-    f_phi_1_k = ((u2k)/(u1m)) * ((Fm)/(Fk)) * ((Tk*Tm + 1)/(Tm**2 + 1))
+    f_phi_1_k = calc_f_phi_1_k(u2k, Tk, Fk, u2m, Tm, Fm)
     dNOx = (x1k - u1m)*f_phi_1_k
     phi_f1_k = dNOx * np.concatenate([phi_ur_m, phi_m, u1m*phi_m], axis=0)
     phi_gamma1 = np.kron(phi_1_k, phi_ur_m)
     phi_nox = np.concatenate([-phi_f1_k, phi_gamma1], axis=0)
     return phi_nox
+
+
+def calc_f_phi_1_k(u2k, Tk, Fk, u2m, Tm, Fm):
+    """Calculate f_phi_1(k)"""
+    f_phi_1_k = ((u2k)/(u2m)) * ((Fm)/(Fk)) * ((Tk*Tm + 1)/(Tm**2 + 1))
+    return f_phi_1_k
 
 
 if __name__ == '__main__':
@@ -35,4 +41,5 @@ if __name__ == '__main__':
     u2m = u1m - 0.4
     Tm = 30
     Fm = 275
-    print(cnstrct_Phi_NOx(xk, u1k, u2k, Tk, Fk, u1m, u2m, Tm, Fm))
+    phi_NOx = cnstrct_Phi_NOx(xk, u1k, u2k, Tk, Fk, u1m, u2m, Tm, Fm)
+    print(phi_NOx)

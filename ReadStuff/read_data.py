@@ -8,6 +8,10 @@ import  unit_convs as uc    # Unit Conversions are done on the raw data
 import  sys
 sys.path.append("../smooth_cd/")
 import cdRLS_smoothing as cdRLS
+import eta_stuff as eta
+# import scipy.signal as sig
+# To Do
+# 1. Implement decimation with time discontinuities
 
 
 # Data names for the truck and test Data ---------------------------------------
@@ -69,6 +73,7 @@ class Data(object):
         if tt == "truck":
             self.name = truck[age][num]
             self.dt = 1
+            self.q  = 2
             try:
                 self.load_pickle()
             except FileNotFoundError:
@@ -76,6 +81,7 @@ class Data(object):
         elif tt == "test":
             self.name = test[age][num]
             self.dt = 0.2
+            self.q = 5
             try:
                 self.load_pickle()
             except FileNotFoundError:
@@ -105,6 +111,11 @@ class Data(object):
                                                  self.cdRLS_parms.lmbda,
                                                  self.cdRLS_parms.nu[state],
                                                  self.cdRLS_parms.h[state])
+        # Calculating eta
+        self.ssd['eta'] = eta.calc_eta_TD(self.ssd['x1'], self.ssd['u1'], self.ssd['t_skips'])
+        # decimate all the data
+        # for state in ['x1', 'x2', 'u1', 'u2', 'T', 'F']:
+        #     self.ssd[state] = sig.decimate(self.ssd[state], self.q)
 
     def gen_iod(self):
         # Generate the input output Data
@@ -135,6 +146,10 @@ class Data(object):
                                                  self.cdRLS_parms.lmbda,
                                                  self.cdRLS_parms.nu[state],
                                                  self.cdRLS_parms.h[state])
+        # Calculate eta
+        self.iod['eta'] = eta.calc_eta_TD(self.iod['y1'], self.iod['u1'], self.iod['t_skips'])
+        # Decimate all the data
+        ## To Do
 
     def pickle_data(self):
         # Create a dictionary of the Data
@@ -224,12 +239,12 @@ if __name__ == "__main__":
     # Actually load the entire Data set ----------------------------------------
     test_data = load_test_data_set()
     truck_data = load_truck_data_set()
-    fig_dpi = 300
+    fig_dpi = 1200
 
     # Plotting all the Data sets
     for i in range(2):
         for j in range(3):
-            for key in ['u1', 'u2', 'T', 'F', 'x1', 'x2']:
+            for key in ['u1', 'u2', 'T', 'F', 'x1', 'x2', 'eta']:
                 plt.figure()
                 plt.plot(test_data[i][j].ssd['t'], test_data[i][j].ssd[key], label=test_data[i][j].name + " " + key)
                 plt.grid()
@@ -239,7 +254,7 @@ if __name__ == "__main__":
                 plt.title(test_data[i][j].name)
                 plt.savefig("figs/" + test_data[i][j].name + "_ssd_" + key + ".png", dpi=fig_dpi)
                 plt.close()
-            for key in ['u1', 'u2', 'T', 'F', 'y1']:
+            for key in ['u1', 'u2', 'T', 'F', 'y1', 'eta']:
                 plt.figure()
                 plt.plot(test_data[i][j].iod['t'], test_data[i][j].iod[key], label=test_data[i][j].name + " " + key)
                 plt.grid()
@@ -252,7 +267,7 @@ if __name__ == "__main__":
 
     for i in range(2):
         for j in range(4):
-            for key in ['u1', 'u2', 'T', 'F', 'y1']:
+            for key in ['u1', 'u2', 'T', 'F', 'y1', 'eta']:
                 plt.figure()
                 plt.plot(truck_data[i][j].iod['t'], truck_data[i][j].iod[key], label=truck_data[i][j].name + " " + key)
                 plt.grid()

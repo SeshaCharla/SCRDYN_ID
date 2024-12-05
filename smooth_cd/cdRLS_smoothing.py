@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.signal import  medfilt
 
 
 def cdRLS_smooth(y, lmda=0, nu=0, h=0):
@@ -30,7 +31,7 @@ def cdRLS_smooth(y, lmda=0, nu=0, h=0):
             g2[t] = 0
         else:
             th_hat[t] = lmda * th_hat[t - 1] + (1 - lmda) * y[t]        # RLS estimate
-    return th_hat, g1, g2
+    return medfilt(th_hat, 5), g1, g2
 
 def cdRLS_withTD(t_skips, y, lmda=0, nu=0, h=0):
     """CD-RLS on data with time-discontinuities
@@ -114,8 +115,8 @@ if __name__=="__main__":
     # smoothing y1 data
     t = dat.iod['t']
     t_skips = dat.iod['t_skips']
-    y = dat.iod['y1']
-    (ys, g1, g2) = cdRLS_withTD(t_skips, y, lmda=lda, nu=10, h=40)
+    y = dat.iod['eta']
+    (ys, g1, g2) = cdRLS_withTD(t_skips, y, lmda=lda, nu=5, h=10)
     plt.figure()
     plt.plot(t, y, label='y1')
     plt.plot(t, ys, label='y1_filtered')
@@ -127,74 +128,94 @@ if __name__=="__main__":
     plt.ylabel('y1 (mol/m^3)')
     plt.title(dat.name)
     plt.tight_layout()
-    plt.savefig("figs/"+dat.name+"/"+dat.name+"_y1.png", dpi=fig_dpi)
-    
-
-    # smoothing u1 data
-    u1 = dat.iod['u1']
-    (u1s, g1, g2) = cdRLS_withTD(t_skips, u1, lmda=lda, nu=20, h=40)
-    plt.figure()
-    plt.plot(t, u1, label='u1')
-    plt.plot(t, u1s, label='u1_filtered')
-    plt.plot(t, g1, label='g1')
-    plt.plot(t, g2, label='g2')
-    plt.legend()
-    plt.grid()
-    plt.xlabel('Time (s)')
-    plt.ylabel('u1 (mol/m^3)')
-    plt.title(dat.name)
-    plt.tight_layout()
-    plt.savefig("figs/"+dat.name+"/"+dat.name+"_u1.png", dpi=fig_dpi)
+    # plt.savefig("figs/" + dat.name + "/" + dat.name + "_y1.png", dpi=fig_dpi)
+    plt.show()
 
 
-    # smoothing u1 data
-    u2 = dat.iod['u2']
-    (u2s, g1, g2) = cdRLS_withTD(t_skips, u2, lmda=lda, nu=0.8, h=2)
-    plt.figure()
-    plt.plot(t, u2, label='u2')
-    plt.plot(t, u2s, label='u2_filtered')
-    plt.plot(t, g1, label='g1')
-    plt.plot(t, g2, label='g2')
-    plt.legend()
-    plt.grid()
-    plt.xlabel('Time (s)')
-    plt.ylabel('u2 (ml/s)')
-    plt.title(dat.name)
-    plt.tight_layout()
-    plt.savefig("figs/"+dat.name+"/"+dat.name+"_u2.png", dpi=fig_dpi)
-
-    # smoothing u1 data
-    T = dat.iod['T']
-    (Ts, g1, g2) = cdRLS_smooth(T, lmda=lda, nu=20, h=40)
-    plt.figure()
-    plt.plot(t, T, label='T')
-    plt.plot(t, Ts, label='T_filtered')
-    plt.plot(t, g1, label='g1')
-    plt.plot(t, g2, label='g2')
-    plt.legend()
-    plt.grid()
-    plt.xlabel('Time (s)')
-    plt.ylabel('T (T -250 deg C)')
-    plt.title(dat.name)
-    plt.tight_layout()
-    plt.savefig("figs/"+dat.name+"/"+dat.name+"_T.png", dpi=fig_dpi)
-
-
-    # smoothing u1 data
-    F = dat.iod['F']
-    (Fs, g1, g2) = cdRLS_smooth(F, lmda=lda, nu=150, h=300)
-    plt.figure()
-    plt.plot(t, F, label='F')
-    plt.plot(t, Fs, label='F_filtered')
-    plt.plot(t, g1, label='g1')
-    plt.plot(t, g2, label='g2')
-    plt.legend()
-    plt.grid()
-    plt.xlabel('Time (s)')
-    plt.ylabel('F (g/s)')
-    plt.title(dat.name)
-    plt.tight_layout()
-    plt.savefig("figs/"+dat.name+"/"+dat.name+"_F.png", dpi=fig_dpi)
+#    # smoothing y1 data
+#    t = dat.iod['t']
+#    t_skips = dat.iod['t_skips']
+#    y = dat.iod['y1']
+#    (ys, g1, g2) = cdRLS_withTD(t_skips, y, lmda=lda, nu=10, h=40)
+#    plt.figure()
+#    plt.plot(t, y, label='y1')
+#    plt.plot(t, ys, label='y1_filtered')
+#    plt.plot(t, g1, label='g1')
+#    plt.plot(t, g2, label='g2')
+#    plt.legend()
+#    plt.grid()
+#    plt.xlabel('Time (s)')
+#    plt.ylabel('y1 (mol/m^3)')
+#    plt.title(dat.name)
+#    plt.tight_layout()
+#    plt.savefig("figs/"+dat.name+"/"+dat.name+"_y1.png", dpi=fig_dpi)
+#
+#
+#    # smoothing u1 data
+#    u1 = dat.iod['u1']
+#    (u1s, g1, g2) = cdRLS_withTD(t_skips, u1, lmda=lda, nu=20, h=40)
+#    plt.figure()
+#    plt.plot(t, u1, label='u1')
+#    plt.plot(t, u1s, label='u1_filtered')
+#    plt.plot(t, g1, label='g1')
+#    plt.plot(t, g2, label='g2')
+#    plt.legend()
+#    plt.grid()
+#    plt.xlabel('Time (s)')
+#    plt.ylabel('u1 (mol/m^3)')
+#    plt.title(dat.name)
+#    plt.tight_layout()
+#    plt.savefig("figs/"+dat.name+"/"+dat.name+"_u1.png", dpi=fig_dpi)
+#
+#
+#    # smoothing u1 data
+#    u2 = dat.iod['u2']
+#    (u2s, g1, g2) = cdRLS_withTD(t_skips, u2, lmda=lda, nu=0.8, h=2)
+#    plt.figure()
+#    plt.plot(t, u2, label='u2')
+#    plt.plot(t, u2s, label='u2_filtered')
+#    plt.plot(t, g1, label='g1')
+#    plt.plot(t, g2, label='g2')
+#    plt.legend()
+#    plt.grid()
+#    plt.xlabel('Time (s)')
+#    plt.ylabel('u2 (ml/s)')
+#    plt.title(dat.name)
+#    plt.tight_layout()
+#    plt.savefig("figs/"+dat.name+"/"+dat.name+"_u2.png", dpi=fig_dpi)
+#
+#    # smoothing u1 data
+#    T = dat.iod['T']
+#    (Ts, g1, g2) = cdRLS_smooth(T, lmda=lda, nu=20, h=40)
+#    plt.figure()
+#    plt.plot(t, T, label='T')
+#    plt.plot(t, Ts, label='T_filtered')
+#    plt.plot(t, g1, label='g1')
+#    plt.plot(t, g2, label='g2')
+#    plt.legend()
+#    plt.grid()
+#    plt.xlabel('Time (s)')
+#    plt.ylabel('T (T -250 deg C)')
+#    plt.title(dat.name)
+#    plt.tight_layout()
+#    plt.savefig("figs/"+dat.name+"/"+dat.name+"_T.png", dpi=fig_dpi)
+#
+#
+#    # smoothing u1 data
+#    F = dat.iod['F']
+#    (Fs, g1, g2) = cdRLS_smooth(F, lmda=lda, nu=150, h=300)
+#    plt.figure()
+#    plt.plot(t, F, label='F')
+#    plt.plot(t, Fs, label='F_filtered')
+#    plt.plot(t, g1, label='g1')
+#    plt.plot(t, g2, label='g2')
+#    plt.legend()
+#    plt.grid()
+#    plt.xlabel('Time (s)')
+#    plt.ylabel('F (g/s)')
+#    plt.title(dat.name)
+#    plt.tight_layout()
+#    plt.savefig("figs/"+dat.name+"/"+dat.name+"_F.png", dpi=fig_dpi)
 
 #    # smoothing x2 data
 #    t = dat.ssd['t']

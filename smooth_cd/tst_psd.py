@@ -17,7 +17,7 @@ td = 0.2
 fs = 1/td
 
 # Welch PSD for x1
-for sig in ['x1', 'x2', 'u1', 'u2', 'T', 'F']:
+for sig in ['x1', 'x2', 'u1', 'u2', 'T', 'F', 'eta']:
     plt.figure()
     for i in range(2):
         for j in range(3):
