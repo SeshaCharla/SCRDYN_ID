@@ -7,13 +7,16 @@ import numpy as np
 from scipy.optimize import lsq_linear
 import read_data as rd
 import phi_alg as phi
+import pickle
 
 
 class tst_parm_id:
     """Parameter identification classs"""
     def __init__(self, dat):
         """Get the id started using the data object"""
+        self.n_parms = 8
         self.dat = dat
+        self.offset = 0
         self.get_data()
         self.Phi_NOx_mat = self.gen_Phi_NOx_mat()
         self.y_mat = self.gen_y_mat()
@@ -23,10 +26,11 @@ class tst_parm_id:
         """Solve the linear least squares"""
         A = self.Phi_NOx_mat
         b = self.y_mat.flatten()
-        lb = np.zeros(10)
-        ub = np.Inf*np.ones(10)
-        sol = lsq_linear(A, b, bounds=(lb,ub))
-        return sol.x
+        lb = np.zeros(self.n_parms)
+        ub = 1000*np.ones(self.n_parms)
+        sol = lsq_linear(A, b)   #, bounds=(lb,ub))
+        print(sol)
+        return np.round(sol.x, 6)
 
     def get_curr_prev_inputs(self, i):
         u1k = self.u1[i]
@@ -43,31 +47,29 @@ class tst_parm_id:
         """Generate the b matrix for lsq_linear"""
         y = np.zeros([self.N-2, 1])
         for i in range(1, self.N-1):
-            x1kp1 = self.x1[i+1]
-            x1k = self.x1[i]
+            etakp1 = self.eta[i+1]
+            etak = self.eta[i]
             u1k, u2k, Tk, Fk, u1m, u2m, Tm, Fm = self.get_curr_prev_inputs(i)
-            dNOx_kp1 = x1kp1 - u1k
-            f_phi_1_k = phi.calc_f_phi_1_k(u2k, Tk, Fk, u2m, Tm, Fm)
-            dNOx_k = (x1k - u1m) * f_phi_1_k
-            y[i-1, 0] = dNOx_kp1 - dNOx_k
+            f_phi_1_k = phi.calc_f_phi_1_k(u1k, Tk, Fk, u1m, Tm, Fm)
+            y[i-1, 0] = etakp1 - (etak * f_phi_1_k)
         return y
 
     def get_data(self):
-        self.t = dat.ssd['t']
-        self.x1 = dat.ssd['x1']
-        self.u1 = dat.ssd['u1']
-        self.u2 = dat.ssd['u2']
-        self.T = dat.ssd['T']
-        self.F = dat.ssd['F']
-        self.N = len(self.t)
+        self.t   = (self.dat.ssd['t'])[self.offset:-1-self.offset]
+        self.u1  = (self.dat.ssd['u1'])[self.offset:-1-self.offset]
+        self.u2  = (self.dat.ssd['u2'])[self.offset:-1-self.offset]
+        self.T   = (self.dat.ssd['T'])[self.offset:-1-self.offset]
+        self.F   = (self.dat.ssd['F'])[self.offset:-1-self.offset]
+        self.eta = (self.dat.ssd['eta'])[self.offset:-1-self.offset]
+        self.N  = len(self.t)
 
     def gen_Phi_NOx_mat(self):
         """Generate the A matrix for lsq_linear"""
-        Phi_NOx_mat = np.zeros((self.N-2, 10))
+        Phi_NOx_mat = np.zeros((self.N-2, self.n_parms))
         for i in range(1, self.N-1):
-            x1k = self.x1[i]
+            etak = self.eta[i]
             u1k, u2k, Tk, Fk, u1m, u2m, Tm, Fm = self.get_curr_prev_inputs(i)
-            phi_NOx = phi.cnstrct_Phi_NOx(x1k, u1k, u2k, Tk, Fk, u1m, u2m, Tm, Fm)
+            phi_NOx = phi.cnstrct_Phi_NOx(etak, u1k, u2k, Tk, Fk, u1m, u2m, Tm, Fm)
             Phi_NOx_mat[i-1, :] = phi_NOx[:, 0].flatten()
         return Phi_NOx_mat
 
@@ -76,4 +78,5 @@ if __name__ == '__main__':
 
     dat = rd.Data("test", 0, 2)
     prm_id = tst_parm_id(dat)
-    print(np.round(prm_id.theta, 6))
+    pickle.dump(np.round(prm_id.theta, 4), open('prm_id.pkl', 'wb'))
+    print(np.round(prm_id.theta, 2))

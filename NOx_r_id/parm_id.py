@@ -31,7 +31,7 @@ def phi_NOx_yi(xkp1, new_toup, old_toup):
     phi_1_k = -u1_k*phi_tau_k
     phi_1_m = -u1_m*phi_tau_m
     f_phi1_k = (phi_1_k.T @ np.linalg.pinv(phi_1_m.T))[0, 0]
-    phi_f1 = (x1_k-u1_m) * f_phi1_k * np.concatenate((phi_tauUR_m, phi_tau_m, -phi_1_m), axis=0)
+    phi_f1 = (x1_k-u1_m) * f_phi1_k * np.concatenate((phi_tauUR_m, phi_tau_m, phi_1_m), axis=0)
     phi_gam1 = np.kron(phi_1_k, phi_tauUR_m)
     phi_nox = np.concatenate((-phi_f1, phi_gam1), axis=0)
     yi = (xkp1 - u1_k) - (x1_k - u1_m)*f_phi1_k
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     xkp1[1] = x1[1]
     old_touple = [x1[0], u1[0], u2[0], T[0], F[0]]
     for i in range(2, N):
-        new_touple = (xkp1[i-1], u1[i-1], u2[i-1], T[i-1], F[i-1])
+        new_touple = (x1[i-1], u1[i-1], u2[i-1], T[i-1], F[i-1])
         xkp1[i] = xkp1_NOx(0,new_touple, old_touple, thetas)
         old_touple = new_touple
 
@@ -99,7 +99,7 @@ if __name__ == '__main__':
 
     plt.figure()
     plt.plot(t, x1)
-    plt.plot(t, x1ps)
+    plt.plot(t, xkp1)
     plt.grid(True)
     plt.legend(['Measured NOx','Predicted NOx'])
     plt.xlabel('Time (s)')
