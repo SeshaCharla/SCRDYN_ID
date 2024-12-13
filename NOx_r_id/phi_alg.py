@@ -16,9 +16,8 @@ def u1_datum(u1):
 
 
 def cnstrct_Phi_NOx(etak, u1k, u2k, Tk, Fk, u1m, u2m, Tm, Fm):
-    """k is current time and
-    m = k-1"""
-    # Correcting for zeros in F and u2 this is valid for test-cell data
+    """k is current time and m = k-1"""
+    # Correcting for zeros in F and u1 this is valid for test-cell data
     Fk = F_datum(Fk)
     Fm = F_datum(Fm)
     u1k = u1_datum(u1k)

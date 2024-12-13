@@ -3,6 +3,9 @@ from pandas import read_csv
 from scipy.io import loadmat
 import pathlib as pth
 import pickle as pkl
+
+from sympy.printing.pretty.pretty_symbology import line_width
+
 import  unit_convs as uc    # Unit Conversions are done on the raw data
 # Filtering data module
 import  sys
@@ -246,7 +249,7 @@ if __name__ == "__main__":
         for j in range(3):
             for key in ['u1', 'u2', 'T', 'F', 'x1', 'x2', 'eta']:
                 plt.figure()
-                plt.plot(test_data[i][j].ssd['t'], test_data[i][j].ssd[key], label=test_data[i][j].name + " " + key)
+                plt.plot(test_data[i][j].ssd['t'], test_data[i][j].ssd[key], label=test_data[i][j].name + " " + key, linewidth=1)
                 plt.grid()
                 plt.legend()
                 plt.xlabel('Time [s]')
@@ -256,7 +259,7 @@ if __name__ == "__main__":
                 plt.close()
             for key in ['u1', 'u2', 'T', 'F', 'y1', 'eta']:
                 plt.figure()
-                plt.plot(test_data[i][j].iod['t'], test_data[i][j].iod[key], label=test_data[i][j].name + " " + key)
+                plt.plot(test_data[i][j].iod['t'], test_data[i][j].iod[key], label=test_data[i][j].name + " " + key, linewidth=1)
                 plt.grid()
                 plt.legend()
                 plt.xlabel('Time [s]')
@@ -269,7 +272,7 @@ if __name__ == "__main__":
         for j in range(4):
             for key in ['u1', 'u2', 'T', 'F', 'y1', 'eta']:
                 plt.figure()
-                plt.plot(truck_data[i][j].iod['t'], truck_data[i][j].iod[key], label=truck_data[i][j].name + " " + key)
+                plt.plot(truck_data[i][j].iod['t'], truck_data[i][j].iod[key], label=truck_data[i][j].name + " " + key, linewidth=1)
                 plt.grid()
                 plt.legend()
                 plt.xlabel('Time [s]')
@@ -283,9 +286,9 @@ if __name__ == "__main__":
     for i in range(2):
         for j in range(3):
             t = test_data[i][j].ssd['t']
-            plt.plot(np.arange(len(t)), t, label=test_data[i][j].name + 'ss')
+            plt.plot(np.arange(len(t)), t, label=test_data[i][j].name + 'ss', linewidth=1)
             t = test_data[i][j].iod['t']
-            plt.plot(np.arange(len(t)), t, label=test_data[i][j].name + 'io')
+            plt.plot(np.arange(len(t)), t, label=test_data[i][j].name + 'io', linewidth=1)
     plt.grid()
     plt.legend()
     plt.xlabel('Index')
